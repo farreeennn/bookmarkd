@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — Bookmarkd</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="form-page">
+
+    <a href="{{ url_for('landing') }}" class="back-button">← Back</a>
+
+    <div class="form-container">
+
+        <h1 class="form-title">Welcome Back</h1>
+
+        {% if error %}
+        <div class="form-error">{{ error }}</div>
+        {% endif %}
+
+        <form class="user-form" method="POST" action="{{ url_for('login') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email"
+                   value="{{ request.form.email or '' }}"
+                   required autocomplete="email">
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password"
+                   required autocomplete="current-password">
+
+            <button type="submit" class="submit-button">Login</button>
+
+        </form>
+
+        <p class="form-switch">Don't have an account? <a href="{{ url_for('register') }}">Register</a></p>
+
+    </div>
+
+</body>
+</html>

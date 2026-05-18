@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register — Bookmarkd</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body class="form-page">
+
+    <a href="{{ url_for('landing') }}" class="back-button">← Back</a>
+
+    <div class="form-container">
+
+        <h1 class="form-title">Create Account</h1>
+
+        {% if error %}
+        <div class="form-error">{{ error }}</div>
+        {% endif %}
+
+        <form class="user-form" method="POST" action="{{ url_for('register') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username"
+                   value="{{ request.form.username or '' }}"
+                   required maxlength="50">
+
+            <label for="display_name">Display Name <span class="optional-label">(optional — how you'll be greeted)</span></label>
+            <input type="text" id="display_name" name="display_name"
+                   value="{{ request.form.display_name or '' }}"
+                   maxlength="80">
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email"
+                   value="{{ request.form.email or '' }}"
+                   required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password"
+                   required minlength="8" placeholder="at least 8 characters">
+
+            <label for="confirm_password">Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" required>
+
+            <button type="submit" class="submit-button">Register</button>
+
+        </form>
+
+        <p class="form-switch">Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+
+    </div>
+
+</body>
+</html>

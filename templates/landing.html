@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmarkd</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <section class="hero-section">
+        <img src="{{ url_for('static', filename='heroimage.jpg') }}" class="hero-image" alt="books">
+        <div class="hero-overlay">
+            <h1 class="hero-title">bookmarkd.</h1>
+            <p class="hero-subtitle">the all-in-one tracker for your reading :)</p>
+        </div>
+    </section>
+
+<section class="quote-divider">
+    <p>
+        "The quality of your thoughts is determined by the quality of your reading." — James Clear
+    </p>
+</section>
+
+    <section class="auth-section">
+        <a href="{{ url_for('register') }}" class="auth-button">Register</a>
+        <a href="{{ url_for('login') }}" class="auth-button">Login</a>
+    </section>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+    </script>
+
+</body>
+</html>
