@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Bookmarkd</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- NAV -->
+    <nav class="nav">
+        <a href="{{ url_for('dashboard') }}" class="nav-logo">BOOKMARKD</a>
+        <div class="nav-links">
+            <a href="{{ url_for('shelves') }}">Shelves</a>
+            <a href="{{ url_for('diary') }}">Diary</a>
+            <a href="{{ url_for('bookshelf') }}">Favourites</a>
+            <a href="{{ url_for('stats') }}">Stats</a>
+            <a href="{{ url_for('logout') }}" class="nav-logout">Log out</a>
+        </div>
+        <button class="nav-hamburger" onclick="toggleNav()">&#9776;</button>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="dashboard-hero">
+        <img src="{{ url_for('static', filename='dashboardbg.png') }}"
+             class="dashboard-hero-image" alt="">
+
+        <div class="dashboard-overlay">
+            <h1 class="dashboard-title">
+                hello, {{ session.display_name }} !
+            </h1>
+            <p class="dashboard-subtitle">what book update do we have today?</p>
+
+            {% if goal_target > 0 %}
+            <div class="reading-progress-container">
+                <div class="reading-progress-bar">
+                    <div class="reading-progress-fill"
+                         style="width: {{ goal_progress }}%">
+                    </div>
+                </div>
+                <p class="progress-text">
+                    {{ finished_this_year }} of {{ goal_target }} books this year
+                </p>
+            </div>
+            {% else %}
+            <a href="{{ url_for('stats') }}" class="goal-cta">
+                Set a reading goal →
+            </a>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- SPLIT SECTION -->
+    <section class="dashboard-links-section">
+        <div class="dashboard-image-side">
+            <img src="{{ url_for('static', filename='leftbookshelf.jpg') }}" alt="">
+        </div>
+
+        <div class="dashboard-links-side">
+            <a href="{{ url_for('shelves') }}" class="dashboard-link">Shelves</a>
+            <a href="{{ url_for('diary') }}" class="dashboard-link">Diary</a>
+            <a href="{{ url_for('bookshelf') }}" class="dashboard-link">Favourites Bookshelf</a>
+            <a href="{{ url_for('stats') }}" class="dashboard-link">Stats</a>
+        </div>
+    </section>
+
+    <!-- CURRENTLY READING -->
+    {% if currently_reading %}
+    <section class="currently-reading-section">
+        <h2>Currently Reading</h2>
+        <div class="book-row">
+            {% for book in currently_reading %}
+            <a href="{{ url_for('book_detail', book_id=book.book_id) }}" class="book-card">
+                {% if book.cover_url %}
+                <img src="{{ book.cover_url }}" alt="{{ book.title }}">
+                {% else %}
+                <div class="book-card-placeholder">
+                    {{ book.title[0] }}
+                </div>
+                {% endif %}
+                <div class="book-card-info">
+                    <p class="book-card-title">{{ book.title }}</p>
+                    <p class="book-card-author">{{ book.author }}</p>
+                    {% if book.total_pages and book.current_page %}
+                    <div class="reading-progress-bar small">
+                        <div class="reading-progress-fill"
+                             style="width: {{ [((book.current_page / book.total_pages) * 100)|round, 100]|min }}%">
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js');
+        }
+        function toggleNav() {
+            document.querySelector('.nav-links').classList.toggle('nav-open');
+        }
+    </script>
+
+</body>
+</html>
