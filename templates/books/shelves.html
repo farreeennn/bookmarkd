@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shelves — Bookmarkd</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- NAV -->
+    <nav class="nav">
+        <a href="{{ url_for('dashboard') }}" class="nav-logo">BOOKMARKD</a>
+        <div class="nav-links">
+            <a href="{{ url_for('shelves') }}">Shelves</a>
+            <a href="{{ url_for('diary') }}">Diary</a>
+            <a href="{{ url_for('bookshelf') }}">Favourites</a>
+            <a href="{{ url_for('stats') }}">Stats</a>
+            <a href="{{ url_for('logout') }}" class="nav-logout">Log out</a>
+        </div>
+        <button class="nav-hamburger" onclick="toggleNav()">&#9776;</button>
+    </nav>
+
+    <!-- PAGE HEADER -->
+    <div class="shelves-header">
+        <div class="shelves-header-text">
+            <a href="{{ url_for('dashboard') }}" class="back-link">← Back</a>
+            <h1 class="page-title">Your Shelves</h1>
+            <p class="page-sub">{{ total_books }} books in your library</p>
+        </div>
+        <a href="{{ url_for('add_book') }}" class="btn btn-primary">+ Add a Book</a>
+    </div>
+
+    <!-- SHELF TABS -->
+    <div class="shelf-tabs-wrap">
+        <a href="{{ url_for('shelves', shelf='currently_reading') }}"
+           class="shelf-tab {% if active_shelf == 'currently_reading' %}active{% endif %}">
+            Currently Reading
+        </a>
+        <a href="{{ url_for('shelves', shelf='want_to_read') }}"
+           class="shelf-tab {% if active_shelf == 'want_to_read' %}active{% endif %}">
+            Want to Read
+        </a>
+        <a href="{{ url_for('shelves', shelf='finished') }}"
+           class="shelf-tab {% if active_shelf == 'finished' %}active{% endif %}">
+            Finished
+        </a>
+        <a href="{{ url_for('shelves', shelf='dnf') }}"
+           class="shelf-tab {% if active_shelf == 'dnf' %}active{% endif %}">
+            Did Not Finish
+        </a>
+    </div>
+
+    <!-- BOOKS GRID -->
+    <div class="shelves-body">
+        {% if books %}
+        <div class="shelves-grid">
+            {% for book in books %}
+            <a href="{{ url_for('book_detail', book_id=book.book_id) }}" class="shelf-book-card">
+
+                <div class="shelf-book-cover">
+                    {% if book.cover_url %}
+                    <img src="{{ book.cover_url }}" alt="{{ book.title }}">
+                    {% else %}
+                    <div class="shelf-book-placeholder">
+                        {{ book.title[0].upper() }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="shelf-book-info">
+                    <p class="shelf-book-title">{{ book.title }}</p>
+                    <p class="shelf-book-author">{{ book.author }}</p>
+
+                    {% if book.genre %}
+                    <span class="shelf-book-genre">{{ book.genre }}</span>
+                    {% endif %}
+
+                    {% if active_shelf == 'currently_reading' and book.total_pages and book.current_page %}
+                    <div class="shelf-progress-bar">
+                        <div class="shelf-progress-fill"
+                             style="width: {{ [((book.current_page / book.total_pages) * 100)|round, 100]|min }}%">
+                        </div>
+                    </div>
+                    <p class="shelf-progress-label">p. {{ book.current_page }} / {{ book.total_pages }}</p>
+                    {% endif %}
+
+                    {% if active_shelf == 'finished' %}
+                    {% if book.star_rating %}
+                    <p class="shelf-stars">{{ '★' * book.star_rating }}{{ '☆' * (5 - book.star_rating) }}</p>
+                    {% endif %}
+                    {% endif %}
+
+                    {% if active_shelf == 'dnf' and book.dnf_note %}
+                    <p class="shelf-dnf-note">"{{ book.dnf_note }}"</p>
+                    {% endif %}
+                </div>
+
+            </a>
+            {% endfor %}
+        </div>
+
+        {% else %}
+
+        <!-- EMPTY STATE -->
+        <div class="shelf-empty">
+            {% if active_shelf == 'currently_reading' %}
+            <p class="shelf-empty-title">Nothing on this shelf yet.</p>
+            <p class="shelf-empty-sub">What are you reading right now?</p>
+            {% elif active_shelf == 'want_to_read' %}
+            <p class="shelf-empty-title">Your wishlist is empty.</p>
+            <p class="shelf-empty-sub">Add books you're dying to read.</p>
+            {% elif active_shelf == 'finished' %}
+            <p class="shelf-empty-title">No finished books yet.</p>
+            <p class="shelf-empty-sub">Every book you finish will live here.</p>
+            {% else %}
+            <p class="shelf-empty-title">No abandoned books.</p>
+            <p class="shelf-empty-sub">It's okay to put a book down.</p>
+            {% endif %}
+            <a href="{{ url_for('add_book') }}" class="btn btn-primary">+ Add a Book</a>
+        </div>
+
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleNav() {
+            document.querySelector('.nav-links').classList.toggle('nav-open');
+        }
+    </script>
+
+</body>
+</html>

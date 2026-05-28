@@ -187,11 +187,23 @@ def shelves():
         shelf = 'currently_reading'
 
     books = db.execute(
-        'SELECT * FROM books WHERE user_id = ? AND shelf_status = ? ORDER BY rowid DESC',
+        '''SELECT b.*, r.star_rating FROM books b
+           LEFT JOIN reviews r ON b.book_id = r.book_id AND r.user_id = b.user_id
+           WHERE b.user_id = ? AND b.shelf_status = ?
+           ORDER BY b.rowid DESC''',
         (user_id, shelf)
     ).fetchall()
 
-    return render_template('books/shelves.html', books=books, active_shelf=shelf)
+    total_books = db.execute(
+        'SELECT COUNT(*) as count FROM books WHERE user_id = ?',
+        (user_id,)
+    ).fetchone()['count']
+
+    return render_template('books/shelves.html',
+        books=books,
+        active_shelf=shelf,
+        total_books=total_books
+    )
 
 
 @app.route('/books/add', methods=['GET', 'POST'])

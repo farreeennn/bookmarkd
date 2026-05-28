@@ -1548,3 +1548,308 @@ body {
     .book-row { gap: 15px; }
     .book-card { width: 150px; }
 }
+
+/* ── SHELVES ── */
+
+.shelves-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 100px 80px 40px;
+    background: #f7f7f7;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+}
+
+.shelves-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 500;
+    color: #1a1a18;
+    line-height: 1;
+}
+
+.page-sub {
+    font-size: 0.9rem;
+    color: #888;
+    font-style: italic;
+}
+
+.back-link {
+    font-size: 0.85rem;
+    color: #aaa;
+    text-decoration: none;
+    transition: color 0.2s;
+    margin-bottom: 0.5rem;
+}
+
+.back-link:hover {
+    color: #9c7c5b;
+}
+
+/* ── TABS ── */
+
+.shelf-tabs-wrap {
+    display: flex;
+    gap: 0;
+    background: #f7f7f7;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
+    padding: 0 80px;
+    overflow-x: auto;
+}
+
+.shelf-tab {
+    padding: 1rem 1.5rem;
+    font-family: 'Lora', serif;
+    font-size: 0.9rem;
+    color: #aaa;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.shelf-tab:hover {
+    color: #1a1a18;
+}
+
+.shelf-tab.active {
+    color: #9c7c5b;
+    border-bottom-color: #9c7c5b;
+}
+
+/* ── BOOKS BODY ── */
+
+.shelves-body {
+    padding: 50px 80px;
+    background: white;
+    min-height: 60vh;
+}
+
+.shelves-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 2rem;
+}
+
+/* ── BOOK CARD ── */
+
+.shelf-book-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s;
+}
+
+.shelf-book-card:hover {
+    transform: translateY(-4px);
+}
+
+.shelf-book-cover {
+    width: 100%;
+    height: 240px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f0ebe3;
+    margin-bottom: 0.85rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.shelf-book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.shelf-book-card:hover .shelf-book-cover img {
+    transform: scale(1.03);
+}
+
+.shelf-book-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    color: #9c7c5b;
+    background: linear-gradient(135deg, #f0ebe3 0%, #e8e0d5 100%);
+}
+
+.shelf-book-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+
+.shelf-book-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #1a1a18;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.shelf-book-author {
+    font-size: 0.78rem;
+    color: #888;
+    font-style: italic;
+}
+
+.shelf-book-genre {
+    display: inline-block;
+    font-size: 0.68rem;
+    color: #9c7c5b;
+    background: #faf5ef;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-top: 0.3rem;
+    width: fit-content;
+    letter-spacing: 0.03em;
+}
+
+.shelf-progress-bar {
+    height: 3px;
+    background: #eee;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.shelf-progress-fill {
+    height: 100%;
+    background: #9c7c5b;
+    border-radius: 2px;
+}
+
+.shelf-progress-label {
+    font-size: 0.68rem;
+    color: #aaa;
+    margin-top: 0.2rem;
+}
+
+.shelf-stars {
+    font-size: 0.85rem;
+    color: #9c7c5b;
+    letter-spacing: 1px;
+    margin-top: 0.3rem;
+}
+
+.shelf-dnf-note {
+    font-size: 0.75rem;
+    color: #aaa;
+    font-style: italic;
+    margin-top: 0.3rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ── EMPTY STATE ── */
+
+.shelf-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8rem 2rem;
+    text-align: center;
+    gap: 0.75rem;
+}
+
+.shelf-empty-title {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.5rem;
+    color: #ccc;
+}
+
+.shelf-empty-sub {
+    font-size: 0.9rem;
+    color: #bbb;
+    margin-bottom: 1.5rem;
+}
+
+/* ── BUTTONS ── */
+
+.btn {
+    display: inline-block;
+    padding: 0.7rem 1.75rem;
+    border-radius: 50px;
+    font-family: 'Lora', serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    border: none;
+}
+
+.btn-primary {
+    background: #9c7c5b;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #7a5f43;
+    transform: translateY(-1px);
+}
+
+.btn-ghost {
+    background: transparent;
+    color: #1a1a18;
+    border: 1px solid #d9d9d9;
+}
+
+.btn-ghost:hover {
+    border-color: #9c7c5b;
+    color: #9c7c5b;
+}
+
+.btn-danger {
+    background: transparent;
+    color: #a33;
+    border: 1px solid #e5a5a5;
+    font-size: 0.82rem;
+    padding: 0.4rem 1rem;
+}
+
+.btn-danger:hover {
+    background: #a33;
+    color: white;
+}
+
+.btn-sm {
+    padding: 0.45rem 1.1rem;
+    font-size: 0.82rem;
+}
+
+/* ── RESPONSIVE ── */
+
+@media (max-width: 900px) {
+    .shelves-header { padding: 90px 30px 30px; flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .shelf-tabs-wrap { padding: 0 30px; }
+    .shelves-body { padding: 30px; }
+    .page-title { font-size: 2.5rem; }
+}
+
+@media (max-width: 600px) {
+    .shelves-header { padding: 80px 20px 25px; }
+    .shelf-tabs-wrap { padding: 0 20px; }
+    .shelves-body { padding: 20px; }
+    .shelves-grid { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+    .shelf-book-cover { height: 180px; }
+}
