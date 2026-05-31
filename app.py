@@ -322,6 +322,23 @@ def edit_book(book_id):
 
     return render_template('books/edit_book.html', book=book, error=error)
 
+@app.route('/books/<int:book_id>/favourite', methods=['POST'])
+@login_required
+def toggle_favourite(book_id):
+    db = get_db()
+    book = db.execute(
+        'SELECT * FROM books WHERE book_id = ? AND user_id = ?',
+        (book_id, session['user_id'])
+    ).fetchone()
+    if book is None:
+        abort(404)
+    new_status = 0 if book['is_favourite'] else 1
+    db.execute(
+        'UPDATE books SET is_favourite = ? WHERE book_id = ? AND user_id = ?',
+        (new_status, book_id, session['user_id'])
+    )
+    db.commit()
+    return redirect(url_for('book_detail', book_id=book_id))
 
 @app.route('/books/<int:book_id>/delete', methods=['POST'])
 @login_required

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review — {{ book.title }} — Bookmarkd</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="nav">
+        <a href="{{ url_for('dashboard') }}" class="nav-logo">BOOKMARKD</a>
+        <div class="nav-links">
+            <a href="{{ url_for('shelves') }}">Shelves</a>
+            <a href="{{ url_for('diary') }}">Diary</a>
+            <a href="{{ url_for('bookshelf') }}">Favourites</a>
+            <a href="{{ url_for('stats') }}">Stats</a>
+            <a href="{{ url_for('logout') }}" class="nav-logout">Log out</a>
+        </div>
+        <button class="nav-hamburger" onclick="toggleNav()">&#9776;</button>
+    </nav>
+
+    <div class="review-page-wrap">
+
+        <!-- LEFT: book info -->
+        <div class="review-book-side">
+            {% if book.cover_url %}
+            <img src="{{ book.cover_url }}" alt="{{ book.title }}" class="review-book-cover">
+            {% else %}
+            <div class="review-cover-placeholder">{{ book.title[0].upper() }}</div>
+            {% endif %}
+            <h2 class="review-book-title">{{ book.title }}</h2>
+            <p class="review-book-author">{{ book.author }}</p>
+            {% if book.genre %}
+            <span class="shelf-book-genre">{{ book.genre }}</span>
+            {% endif %}
+        </div>
+
+        <!-- RIGHT: review form -->
+        <div class="review-form-side">
+
+            <div class="review-form-header">
+                <a href="{{ url_for('book_detail', book_id=book.book_id) }}" class="back-link">← Back</a>
+                <h1 class="page-title">
+                    {% if existing %}Edit Your Review{% else %}Write a Review{% endif %}
+                </h1>
+                <p class="page-sub">Your thoughts on this book, privately kept</p>
+            </div>
+
+            {% if error %}
+            <div class="form-error">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('add_review', book_id=book.book_id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <!-- STAR RATING -->
+                <div class="field-group">
+                    <label>Your Rating</label>
+                    <div class="star-input-wrap">
+                        {% for i in [5,4,3,2,1] %}
+                        <input type="radio" id="star{{ i }}" name="star_rating" value="{{ i }}"
+                               {% if existing and existing.star_rating == i %}checked{% endif %}>
+                        <label for="star{{ i }}" class="star-label">★</label>
+                        {% endfor %}
+                    </div>
+                    <p class="field-hint">Click to select your rating</p>
+                </div>
+
+                <!-- REVIEW TEXT -->
+                <div class="field-group">
+                    <label for="review_text">Your Review</label>
+                    <textarea id="review_text" name="review_text"
+                              placeholder="What did you think? How did it make you feel? Would you recommend it?..."
+                              rows="8">{{ existing.review_text if existing else '' }}</textarea>
+                </div>
+
+                <div class="review-form-actions">
+                    <button type="submit" class="btn btn-primary btn-full-width">
+                        {% if existing %}Update Review{% else %}Save Review{% endif %}
+                    </button>
+                    <a href="{{ url_for('book_detail', book_id=book.book_id) }}"
+                       class="btn btn-ghost btn-full-width">Cancel</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleNav() {
+            document.querySelector('.nav-links').classList.toggle('nav-open');
+        }
+    </script>
+
+</body>
+</html>

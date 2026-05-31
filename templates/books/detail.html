@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ book.title }} — Bookmarkd</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="nav">
+        <a href="{{ url_for('dashboard') }}" class="nav-logo">BOOKMARKD</a>
+        <div class="nav-links">
+            <a href="{{ url_for('shelves') }}">Shelves</a>
+            <a href="{{ url_for('diary') }}">Diary</a>
+            <a href="{{ url_for('bookshelf') }}">Favourites</a>
+            <a href="{{ url_for('stats') }}">Stats</a>
+            <a href="{{ url_for('logout') }}" class="nav-logout">Log out</a>
+        </div>
+        <button class="nav-hamburger" onclick="toggleNav()">&#9776;</button>
+    </nav>
+
+    <!-- HERO BANNER -->
+    <div class="detail-hero"
+         {% if book.cover_url %}
+         style="background-image: url('{{ book.cover_url }}');"
+         {% endif %}>
+        <div class="detail-hero-overlay"></div>
+        <div class="detail-hero-content">
+            <a href="{{ url_for('shelves') }}" class="back-link-light">← Back to Shelves</a>
+            <h1 class="detail-hero-title">{{ book.title }}</h1>
+            <p class="detail-hero-author">{{ book.author }}</p>
+            {% if book.genre %}
+            <span class="detail-genre-badge">{{ book.genre }}</span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="detail-wrap">
+
+        <!-- LEFT: cover + actions -->
+        <div class="detail-left">
+            <div class="detail-cover-wrap">
+                {% if book.cover_url %}
+                <img src="{{ book.cover_url }}" alt="{{ book.title }}" class="detail-cover">
+                {% else %}
+                <div class="detail-cover-placeholder">
+                    {{ book.title[0].upper() }}
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="detail-actions">
+                <a href="{{ url_for('edit_book', book_id=book.book_id) }}" class="btn btn-ghost btn-full-width">
+                    Edit Book
+                </a>
+                {% if book.shelf_status == 'finished' %}
+                <a href="{{ url_for('add_review', book_id=book.book_id) }}" class="btn btn-primary btn-full-width">
+                    {% if review %}Edit Review{% else %}Write a Review{% endif %}
+                </a>
+                {% endif %}
+
+                {% if book.shelf_status == 'finished' %}
+                <form method="POST" action="{{ url_for('toggle_favourite', book_id=book.book_id) }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-ghost btn-full-width favourite-toggle-btn">
+                        {% if book.is_favourite %}
+                        ★ Remove from Favourites
+                        {% else %}
+                        ☆ Add to Favourites
+                        {% endif %}
+                    </button>
+                </form>
+{% endif %}
+                <form method="POST" action="{{ url_for('delete_book', book_id=book.book_id) }}"
+                      onsubmit="return confirm('Are you sure you want to remove this book?')">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger btn-full-width">Remove Book</button>
+                </form>
+            </div>
+
+            <!-- SHELF STATUS BADGE -->
+            <div class="detail-shelf-badge">
+                {% if book.shelf_status == 'currently_reading' %}
+                <span class="shelf-badge reading">Currently Reading</span>
+                {% elif book.shelf_status == 'want_to_read' %}
+                <span class="shelf-badge want">Want to Read</span>
+                {% elif book.shelf_status == 'finished' %}
+                <span class="shelf-badge finished">Finished</span>
+                {% else %}
+                <span class="shelf-badge dnf">Did Not Finish</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- RIGHT: info -->
+        <div class="detail-right">
+
+            <!-- META INFO -->
+            <div class="detail-meta-grid">
+                {% if book.date_started %}
+                <div class="detail-meta-item">
+                    <p class="detail-meta-label">Started</p>
+                    <p class="detail-meta-value">{{ book.date_started }}</p>
+                </div>
+                {% endif %}
+                {% if book.date_finished %}
+                <div class="detail-meta-item">
+                    <p class="detail-meta-label">Finished</p>
+                    <p class="detail-meta-value">{{ book.date_finished }}</p>
+                </div>
+                {% endif %}
+                {% if book.total_pages %}
+                <div class="detail-meta-item">
+                    <p class="detail-meta-label">Pages</p>
+                    <p class="detail-meta-value">{{ book.total_pages }}</p>
+                </div>
+                {% endif %}
+                {% if book.current_page and book.shelf_status == 'currently_reading' %}
+                <div class="detail-meta-item">
+                    <p class="detail-meta-label">Current Page</p>
+                    <p class="detail-meta-value">{{ book.current_page }}</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- PROGRESS BAR (currently reading only) -->
+            {% if book.shelf_status == 'currently_reading' and book.total_pages and book.current_page %}
+            <div class="detail-progress-wrap">
+                <div class="detail-progress-track">
+                    <div class="detail-progress-fill"
+                         style="width: {{ [((book.current_page / book.total_pages) * 100)|round, 100]|min }}%">
+                    </div>
+                </div>
+                <p class="detail-progress-label">
+                    {{ ((book.current_page / book.total_pages) * 100)|round }}% through
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- REVIEW BLOCK -->
+            {% if review %}
+            <div class="detail-review-block">
+                <p class="detail-section-label">Your Review</p>
+                <div class="detail-stars">
+                    {% for i in range(review.star_rating) %}★{% endfor %}{% for i in range(5 - review.star_rating) %}☆{% endfor %}
+                </div>
+                {% if review.review_text %}
+                <p class="detail-review-text">"{{ review.review_text }}"</p>
+                {% endif %}
+                <p class="detail-review-date">Written {{ review.date_written }}</p>
+            </div>
+            {% endif %}
+
+            <!-- PERSONAL NOTES -->
+            {% if book.personal_notes %}
+            <div class="detail-notes-block">
+                <p class="detail-section-label">Your Notes</p>
+                <p class="detail-notes-text">{{ book.personal_notes }}</p>
+            </div>
+            {% endif %}
+
+            <!-- DNF NOTE -->
+            {% if book.shelf_status == 'dnf' and book.dnf_note %}
+            <div class="detail-notes-block">
+                <p class="detail-section-label">Why you stopped</p>
+                <p class="detail-notes-text">{{ book.dnf_note }}</p>
+            </div>
+            {% endif %}
+
+            <!-- FAVOURITE STATUS -->
+            {% if book.shelf_status == 'finished' %}
+            <div class="detail-favourite-wrap">
+                <p class="detail-section-label">Favourites Shelf</p>
+                <p class="detail-favourite-status">
+                    {% if book.is_favourite %}
+                    ★ This book is on your favourites shelf
+                    {% else %}
+                    Mark as favourite to add it to your bookshelf display
+                    {% endif %}
+                </p>
+            </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <script>
+        function toggleNav() {
+            document.querySelector('.nav-links').classList.toggle('nav-open');
+        }
+    </script>
+
+</body>
+</html>

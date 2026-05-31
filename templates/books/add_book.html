@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add a Book — Bookmarkd</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- NAV -->
+    <nav class="nav">
+        <a href="{{ url_for('dashboard') }}" class="nav-logo">BOOKMARKD</a>
+        <div class="nav-links">
+            <a href="{{ url_for('shelves') }}">Shelves</a>
+            <a href="{{ url_for('diary') }}">Diary</a>
+            <a href="{{ url_for('bookshelf') }}">Favourites</a>
+            <a href="{{ url_for('stats') }}">Stats</a>
+            <a href="{{ url_for('logout') }}" class="nav-logout">Log out</a>
+        </div>
+        <button class="nav-hamburger" onclick="toggleNav()">&#9776;</button>
+    </nav>
+
+    <div class="add-book-wrap">
+
+        <!-- LEFT SIDE - decorative -->
+        <div class="add-book-left">
+            <img src="{{ url_for('static', filename='addbookside.jpg') }}"
+                 alt="" class="add-book-side-img">
+            <div class="add-book-side-overlay">
+                <p class="add-book-side-quote">"One must always be careful of books, and what is inside them, for words have the power to change us."</p>
+                <span class="add-book-side-attr">— Cassandra Clare</span>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE - form -->
+        <div class="add-book-right">
+
+            <div class="add-book-header">
+                <a href="{{ url_for('shelves') }}" class="back-link">← Back to Shelves</a>
+                <h1 class="page-title">Add a Book</h1>
+                <p class="page-sub">Search for a title or fill in the details yourself</p>
+            </div>
+
+            {% if error %}
+            <div class="form-error">{{ error }}</div>
+            {% endif %}
+
+            <!-- SEARCH BAR -->
+            <div class="search-wrap">
+                <div class="search-bar">
+                    <input type="text" id="search-input"
+                           placeholder="Search by title or author..."
+                           autocomplete="off">
+                    <button type="button" class="btn btn-primary" onclick="searchBooks()">Search</button>
+                </div>
+                <p class="search-loading" id="search-loading">Searching...</p>
+                <div class="search-results" id="search-results"></div>
+            </div>
+
+            <!-- DIVIDER -->
+            <div class="add-book-divider">
+                <span>or enter manually</span>
+            </div>
+
+            <!-- FORM -->
+            <form class="add-book-form" method="POST" action="{{ url_for('add_book') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label for="title">Title <span class="required">*</span></label>
+                        <input type="text" id="title" name="title"
+                               value="{{ request.form.title or '' }}"
+                               placeholder="e.g. The Bell Jar" required>
+                    </div>
+                    <div class="field-group">
+                        <label for="author">Author <span class="required">*</span></label>
+                        <input type="text" id="author" name="author"
+                               value="{{ request.form.author or '' }}"
+                               placeholder="e.g. Sylvia Plath" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label for="genre">Genre</label>
+                        <select id="genre" name="genre">
+                            <option value="">Select a genre</option>
+                            <option value="Fiction" {% if request.form.genre == 'Fiction' %}selected{% endif %}>Fiction</option>
+                            <option value="Non-Fiction" {% if request.form.genre == 'Non-Fiction' %}selected{% endif %}>Non-Fiction</option>
+                            <option value="Fantasy" {% if request.form.genre == 'Fantasy' %}selected{% endif %}>Fantasy</option>
+                            <option value="Romance" {% if request.form.genre == 'Romance' %}selected{% endif %}>Romance</option>
+                            <option value="Mystery" {% if request.form.genre == 'Mystery' %}selected{% endif %}>Mystery</option>
+                            <option value="Thriller" {% if request.form.genre == 'Thriller' %}selected{% endif %}>Thriller</option>
+                            <option value="Sci-Fi" {% if request.form.genre == 'Sci-Fi' %}selected{% endif %}>Sci-Fi</option>
+                            <option value="Historical Fiction" {% if request.form.genre == 'Historical Fiction' %}selected{% endif %}>Historical Fiction</option>
+                            <option value="Biography" {% if request.form.genre == 'Biography' %}selected{% endif %}>Biography</option>
+                            <option value="Self-Help" {% if request.form.genre == 'Self-Help' %}selected{% endif %}>Self-Help</option>
+                            <option value="Classic" {% if request.form.genre == 'Classic' %}selected{% endif %}>Classic</option>
+                            <option value="Poetry" {% if request.form.genre == 'Poetry' %}selected{% endif %}>Poetry</option>
+                            <option value="Other" {% if request.form.genre == 'Other' %}selected{% endif %}>Other</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label for="shelf_status">Shelf <span class="required">*</span></label>
+                        <select id="shelf_status" name="shelf_status" onchange="toggleDNFNote()">
+                            <option value="want_to_read" {% if request.form.shelf_status == 'want_to_read' %}selected{% endif %}>Want to Read</option>
+                            <option value="currently_reading" {% if request.form.shelf_status == 'currently_reading' %}selected{% endif %}>Currently Reading</option>
+                            <option value="finished" {% if request.form.shelf_status == 'finished' %}selected{% endif %}>Finished</option>
+                            <option value="dnf" {% if request.form.shelf_status == 'dnf' %}selected{% endif %}>Did Not Finish</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label for="total_pages">Total Pages</label>
+                        <input type="number" id="total_pages" name="total_pages"
+                               value="{{ request.form.total_pages or '' }}"
+                               placeholder="e.g. 320" min="1">
+                    </div>
+                    <div class="field-group">
+                        <label for="current_page">Current Page</label>
+                        <input type="number" id="current_page" name="current_page"
+                               value="{{ request.form.current_page or '' }}"
+                               placeholder="e.g. 120" min="0">
+                    </div>
+
+                    <div class="field-group">
+                        <label for="total_pages">Total Pages</label>
+                        <input type="number" id="total_pages" name="total_pages"
+                                value="{{ request.form.total_pages or '' }}"
+                                placeholder="e.g. 320" min="1">
+                                <p class="field-hint">Auto-fills from search, or check the back of your book</p>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label for="date_started">Date Started</label>
+                        <input type="date" id="date_started" name="date_started"
+                               value="{{ request.form.date_started or '' }}">
+                    </div>
+                    <div class="field-group">
+                        <label for="date_finished">Date Finished</label>
+                        <input type="date" id="date_finished" name="date_finished"
+                               value="{{ request.form.date_finished or '' }}">
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="cover_url">Cover Image URL</label>
+                    <input type="url" id="cover_url" name="cover_url"
+                           value="{{ request.form.cover_url or '' }}"
+                           placeholder="https://covers.openlibrary.org/...">
+                    <p class="field-hint">This fills in automatically if you use the search above</p>
+                </div>
+
+                <div class="field-group">
+                    <label for="personal_notes">Personal Notes</label>
+                    <textarea id="personal_notes" name="personal_notes"
+                              placeholder="Quotes, thoughts, feelings mid-read...">{{ request.form.personal_notes or '' }}</textarea>
+                </div>
+
+                <div class="field-group" id="dnf-note-group" style="display:none;">
+                    <label for="dnf_note">Why did you stop?</label>
+                    <textarea id="dnf_note" name="dnf_note"
+                              placeholder="It's okay to put a book down...">{{ request.form.dnf_note or '' }}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full-width">
+                    Add to Library
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script>
+        function toggleNav() {
+            document.querySelector('.nav-links').classList.toggle('nav-open');
+        }
+
+        function toggleDNFNote() {
+            const shelf = document.getElementById('shelf_status').value;
+            const dnfGroup = document.getElementById('dnf-note-group');
+            dnfGroup.style.display = shelf === 'dnf' ? 'block' : 'none';
+        }
+
+        function searchBooks() {
+            const query = document.getElementById('search-input').value.trim();
+            if (!query) return;
+
+            const loading = document.getElementById('search-loading');
+            const results = document.getElementById('search-results');
+            loading.style.display = 'block';
+            results.innerHTML = '';
+
+            fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=8`)
+                .then(res => res.json())
+                .then(data => {
+                    loading.style.display = 'none';
+                    if (!data.docs || data.docs.length === 0) {
+                        results.innerHTML = '<p class="search-no-results">No results found. Try entering details manually below.</p>';
+                        return;
+                    }
+                    data.docs.forEach(book => {
+                        const title = book.title || '';
+                        const author = book.author_name ? book.author_name[0] : '';
+                        const pages = book.number_of_pages_median || '';
+                        const coverId = book.cover_i;
+                        const coverUrl = coverId
+                            ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`
+                            : '';
+
+                        const item = document.createElement('div');
+                        item.className = 'search-result-item';
+                        item.innerHTML = `
+                            ${coverUrl
+                                ? `<img src="${coverUrl}" class="search-result-cover" alt="${title}">`
+                                : `<div class="search-result-cover-placeholder">${title[0] || '?'}</div>`
+                            }
+                            <div class="search-result-info">
+                                <p class="search-result-title">${title}</p>
+                                <p class="search-result-author">${author}</p>
+                                ${pages ? `<p class="search-result-pages">${pages} pages</p>` : ''}
+                            </div>
+                        `;
+                        item.onclick = () => fillForm(title, author, pages, coverUrl);
+                        results.appendChild(item);
+                    });
+                })
+                .catch(() => {
+                    loading.style.display = 'none';
+                    results.innerHTML = '<p class="search-no-results">Search failed. Please enter details manually.</p>';
+                });
+        }
+
+        function fillForm(title, author, pages, coverUrl) {
+            document.getElementById('title').value = title;
+            document.getElementById('author').value = author;
+            if (pages) document.getElementById('total_pages').value = pages;
+            if (coverUrl) document.getElementById('cover_url').value = coverUrl;
+            document.getElementById('search-results').innerHTML = '';
+            document.getElementById('search-input').value = '';
+            document.querySelector('.add-book-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchBooks();
+            }
+        });
+
+        toggleDNFNote();
+    </script>
+
+</body>
+</html>

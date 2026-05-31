@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit — {{ book.title }} — Bookmarkd</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="nav">
+        <a href="{{ url_for('dashboard') }}" class="nav-logo">BOOKMARKD</a>
+        <div class="nav-links">
+            <a href="{{ url_for('shelves') }}">Shelves</a>
+            <a href="{{ url_for('diary') }}">Diary</a>
+            <a href="{{ url_for('bookshelf') }}">Favourites</a>
+            <a href="{{ url_for('stats') }}">Stats</a>
+            <a href="{{ url_for('logout') }}" class="nav-logout">Log out</a>
+        </div>
+        <button class="nav-hamburger" onclick="toggleNav()">&#9776;</button>
+    </nav>
+
+    <div class="add-book-wrap">
+
+        <!-- LEFT SIDE decorative -->
+        <div class="add-book-left">
+            {% if book.cover_url %}
+            <img src="{{ book.cover_url }}" alt="{{ book.title }}" class="add-book-side-img">
+            {% else %}
+            <img src="{{ url_for('static', filename='addbookside.jpg') }}" alt="" class="add-book-side-img">
+            {% endif %}
+            <div class="add-book-side-overlay">
+                <p class="add-book-side-quote">{{ book.title }}</p>
+                <span class="add-book-side-attr">{{ book.author }}</span>
+            </div>
+        </div>
+
+        <!-- RIGHT SIDE form -->
+        <div class="add-book-right">
+
+            <div class="add-book-header">
+                <a href="{{ url_for('book_detail', book_id=book.book_id) }}" class="back-link">← Back</a>
+                <h1 class="page-title">Edit Book</h1>
+                <p class="page-sub">Update the details for this entry</p>
+            </div>
+
+            {% if error %}
+            <div class="form-error">{{ error }}</div>
+            {% endif %}
+
+            <form class="add-book-form" method="POST"
+                  action="{{ url_for('edit_book', book_id=book.book_id) }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label for="title">Title <span class="required">*</span></label>
+                        <input type="text" id="title" name="title"
+                               value="{{ request.form.title or book.title }}" required>
+                    </div>
+                    <div class="field-group">
+                        <label for="author">Author <span class="required">*</span></label>
+                        <input type="text" id="author" name="author"
+                               value="{{ request.form.author or book.author }}" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label for="genre">Genre</label>
+                        <select id="genre" name="genre">
+                            <option value="">Select a genre</option>
+                            {% for g in ['Fiction','Non-Fiction','Fantasy','Romance','Mystery','Thriller','Sci-Fi','Historical Fiction','Biography','Self-Help','Classic','Poetry','Other'] %}
+                            <option value="{{ g }}"
+                                {% if (request.form.genre or book.genre) == g %}selected{% endif %}>
+                                {{ g }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label for="shelf_status">Shelf <span class="required">*</span></label>
+                        <select id="shelf_status" name="shelf_status" onchange="toggleDNFNote()">
+                            <option value="want_to_read" {% if (request.form.shelf_status or book.shelf_status) == 'want_to_read' %}selected{% endif %}>Want to Read</option>
+                            <option value="currently_reading" {% if (request.form.shelf_status or book.shelf_status) == 'currently_reading' %}selected{% endif %}>Currently Reading</option>
+                            <option value="finished" {% if (request.form.shelf_status or book.shelf_status) == 'finished' %}selected{% endif %}>Finished</option>
+                            <option value="dnf" {% if (request.form.shelf_status or book.shelf_status) == 'dnf' %}selected{% endif %}>Did Not Finish</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label for="total_pages">Total Pages</label>
+                        <input type="number" id="total_pages" name="total_pages"
+                               value="{{ request.form.total_pages or book.total_pages or '' }}" min="1">
+                    </div>
+                    <div class="field-group">
+                        <label for="current_page">Current Page</label>
+                        <input type="number" id="current_page" name="current_page"
+                               value="{{ request.form.current_page or book.current_page or '' }}" min="0">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="field-group">
+                        <label for="date_started">Date Started</label>
+                        <input type="date" id="date_started" name="date_started"
+                               value="{{ request.form.date_started or book.date_started or '' }}">
+                    </div>
+                    <div class="field-group">
+                        <label for="date_finished">Date Finished</label>
+                        <input type="date" id="date_finished" name="date_finished"
+                               value="{{ request.form.date_finished or book.date_finished or '' }}">
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="cover_url">Cover Image URL</label>
+                    <input type="url" id="cover_url" name="cover_url"
+                           value="{{ request.form.cover_url or book.cover_url or '' }}">
+                </div>
+
+                <div class="field-group">
+                    <label for="personal_notes">Personal Notes</label>
+                    <textarea id="personal_notes" name="personal_notes"
+                              placeholder="Quotes, thoughts, feelings...">{{ request.form.personal_notes or book.personal_notes or '' }}</textarea>
+                </div>
+
+                <div class="field-group" id="dnf-note-group">
+                    <label for="dnf_note">Why did you stop?</label>
+                    <textarea id="dnf_note" name="dnf_note"
+                              placeholder="It's okay to put a book down...">{{ request.form.dnf_note or book.dnf_note or '' }}</textarea>
+                </div>
+
+                {% if (request.form.shelf_status or book.shelf_status) == 'finished' %}
+                <div class="field-group favourite-field" id="favourite-group">
+                    <label class="favourite-label">
+                        <input type="checkbox" name="is_favourite" value="1"
+                               {% if book.is_favourite %}checked{% endif %}>
+                        <span>Add to favourites bookshelf</span>
+                    </label>
+                    <p class="field-hint">Favourited books appear on your interactive bookshelf</p>
+                </div>
+                {% endif %}
+
+                <div class="edit-form-actions">
+                    <button type="submit" class="btn btn-primary btn-full-width">Save Changes</button>
+                    <a href="{{ url_for('book_detail', book_id=book.book_id) }}"
+                       class="btn btn-ghost btn-full-width">Cancel</a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleNav() {
+            document.querySelector('.nav-links').classList.toggle('nav-open');
+        }
+        function toggleDNFNote() {
+            const shelf = document.getElementById('shelf_status').value;
+            const dnfGroup = document.getElementById('dnf-note-group');
+            const favGroup = document.getElementById('favourite-group');
+            if (dnfGroup) dnfGroup.style.display = shelf === 'dnf' ? 'block' : 'none';
+            if (favGroup) favGroup.style.display = shelf === 'finished' ? 'block' : 'none';
+        }
+        toggleDNFNote();
+    </script>
+
+</body>
+</html>
