@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Diary — Bookmarkd</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="nav">
+        <a href="{{ url_for('dashboard') }}" class="nav-logo">BOOKMARKD</a>
+        <div class="nav-links">
+            <a href="{{ url_for('shelves') }}">Shelves</a>
+            <a href="{{ url_for('diary') }}">Diary</a>
+            <a href="{{ url_for('bookshelf') }}">Favourites</a>
+            <a href="{{ url_for('stats') }}">Stats</a>
+            <a href="{{ url_for('logout') }}" class="nav-logout">Log out</a>
+        </div>
+        <button class="nav-hamburger" onclick="toggleNav()">&#9776;</button>
+    </nav>
+
+    <!-- DIARY HEADER -->
+    <div class="diary-header">
+        <div class="diary-header-left">
+            <a href="{{ url_for('dashboard') }}" class="back-link">← Back</a>
+            <h1 class="diary-title">Reading Diary</h1>
+            <p class="diary-subtitle">
+                {% if entries %}
+                    {{ entries|length }} private entr{{ 'y' if entries|length == 1 else 'ies' }}
+                {% else %}
+                    Your private reading journal
+                {% endif %}
+            </p>
+        </div>
+        <div class="diary-header-decoration">
+            <span class="diary-deco-line"></span>
+            <span class="diary-deco-text">est. {{ 2026 }}</span>
+            <span class="diary-deco-line"></span>
+        </div>
+    </div>
+
+    <div class="diary-wrap">
+
+        <!-- LEFT: entries -->
+        <div class="diary-entries-col">
+
+            {% if entries %}
+
+            {% for entry in entries %}
+            <div class="diary-card">
+
+                <div class="diary-card-top">
+                    <div class="diary-card-date-wrap">
+                        <span class="diary-card-day">{{ entry.date_created[:10] }}</span>
+                        {% if entry.book_title %}
+                        <a href="#" class="diary-card-book-link">
+                            re: {{ entry.book_title }}
+                        </a>
+                        {% endif %}
+                    </div>
+                    <form method="POST"
+                          action="{{ url_for('delete_diary_entry', entry_id=entry.entry_id) }}"
+                          onsubmit="return confirm('Delete this entry?')">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="diary-delete-btn" title="Delete entry">✕</button>
+                    </form>
+                </div>
+
+                <div class="diary-card-body">
+                    <p class="diary-card-text {% if entry.entry_text|length > 300 %}collapsed{% endif %}"
+                       id="entry-{{ entry.entry_id }}">{{ entry.entry_text }}</p>
+                    {% if entry.entry_text|length > 300 %}
+                    <button class="diary-expand-btn"
+                            onclick="expandEntry('entry-{{ entry.entry_id }}', this)">
+                        Read more
+                    </button>
+                    {% endif %}
+                </div>
+
+            </div>
+            {% endfor %}
+
+            {% else %}
+
+            <!-- EMPTY STATE -->
+            <div class="diary-empty">
+                <div class="diary-empty-icon">✦</div>
+                <p class="diary-empty-title">Your diary is empty</p>
+                <p class="diary-empty-sub">
+                    Write your first entry — a quote that moved you,<br>
+                    a thought mid-chapter, a feeling after the last page.
+                </p>
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        <!-- RIGHT: new entry form -->
+        <div class="diary-form-col">
+
+            <div class="diary-form-card">
+
+                <div class="diary-form-header">
+                    <h3 class="diary-form-title">New Entry</h3>
+                    <p class="diary-form-sub">What's on your mind?</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('add_diary_entry') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                    <div class="diary-form-field">
+                        <label for="entry_text">Your thoughts</label>
+                        <textarea id="entry_text" name="entry_text"
+                                  placeholder="Write anything..."
+                                  required></textarea>
+                    </div>
+
+                    <div class="diary-form-field">
+                        <label for="book_id">Link to a book <span class="optional-tag">(optional)</span></label>
+                        <select id="book_id" name="book_id">
+                            <option value="">No book linked</option>
+                            {% for book in books %}
+                            <option value="{{ book.book_id }}">{{ book.title }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="entry_date">Date</label>
+                        <input type="date" id="entry_date" name="entry_date" 
+                        value="{{ today }}">
+                    </div>
+
+                    <button type="submit" class="diary-submit-btn">
+                        Save Entry
+                    </button>
+
+                </form>
+
+                <div class="diary-form-footer">
+                    <p>All entries are entirely private to you.</p>
+                </div>
+
+            </div>
+
+            <!-- DECORATIVE QUOTE -->
+            <div class="diary-side-quote">
+                <p>"Keep a diary and one day it'll keep you."</p>
+                <span>— Mae West</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        function toggleNav() {
+            document.querySelector('.nav-links').classList.toggle('nav-open');
+        }
+
+        function expandEntry(id, btn) {
+            const el = document.getElementById(id);
+            el.classList.remove('collapsed');
+            btn.style.display = 'none';
+        }
+    </script>
+
+</body>
+</html>

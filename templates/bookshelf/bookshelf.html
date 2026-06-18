@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favourites — Bookmarkd</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="nav">
+        <a href="{{ url_for('dashboard') }}" class="nav-logo">BOOKMARKD</a>
+        <div class="nav-links">
+            <a href="{{ url_for('shelves') }}">Shelves</a>
+            <a href="{{ url_for('diary') }}">Diary</a>
+            <a href="{{ url_for('bookshelf') }}">Favourites</a>
+            <a href="{{ url_for('stats') }}">Stats</a>
+            <a href="{{ url_for('logout') }}" class="nav-logout">Log out</a>
+        </div>
+        <button class="nav-hamburger" onclick="toggleNav()">&#9776;</button>
+    </nav>
+
+    <!-- HEADER -->
+    <div class="bookshelf-header">
+        <div class="bookshelf-header-left">
+            <a href="{{ url_for('dashboard') }}" class="back-link">← Back</a>
+            <h1 class="bookshelf-page-title">Favourites</h1>
+            <p class="bookshelf-page-sub">
+                {% if favourites %}
+                    {{ favourites|length }} book{{ 's' if favourites|length != 1 else '' }} on your shelf
+                {% else %}
+                    Your most loved books, displayed as a shelf
+                {% endif %}
+            </p>
+        </div>
+        {% if favourites %}
+        <button class="shelf-view-toggle" id="view-toggle" onclick="toggleView()">
+            Switch to List View
+        </button>
+        {% endif %}
+    </div>
+
+    {% if favourites %}
+
+    <!-- SHELF VIEW -->
+    <div class="bookshelf-scene" id="shelf-view">
+
+        <div class="shelf-room">
+
+            <div class="shelf-unit">
+
+                <!-- SHELF PLANK -->
+                <div class="shelf-plank" id="shelf-plank">
+                    {% for book in favourites %}
+                    <div class="book-spine"
+                         style="background: {{ loop.cycle('#5C4033', '#4a6741', '#8B6914', '#2C4A6B', '#7B3F5E', '#3D5C4A', '#6B4226', '#4A5C2C') }};"
+                         onclick="openBook({{ book.book_id }})"
+                         id="spine-{{ book.book_id }}"
+                         title="{{ book.title }}">
+                        <span class="spine-title">{{ book.title }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- SHELF WOOD -->
+                <div class="shelf-wood"></div>
+
+            </div>
+
+        </div>
+
+        <!-- EXPAND PANELS -->
+        {% for book in favourites %}
+        <div class="book-panel" id="panel-{{ book.book_id }}">
+            <button class="panel-close" onclick="closeBook({{ book.book_id }})">✕ close</button>
+            <div class="panel-inner">
+                <div class="panel-cover-wrap">
+                    {% if book.cover_url %}
+                    <img src="{{ book.cover_url }}" alt="{{ book.title }}" class="panel-cover">
+                    {% else %}
+                    <div class="panel-cover-placeholder">{{ book.title[0].upper() }}</div>
+                    {% endif %}
+                </div>
+                <div class="panel-info">
+                    <h2 class="panel-title">{{ book.title }}</h2>
+                    <p class="panel-author">{{ book.author }}</p>
+                    {% if book.star_rating %}
+                    <div class="panel-stars">
+                        {% for i in range(book.star_rating) %}★{% endfor %}{% for i in range(5 - book.star_rating) %}☆{% endfor %}
+                    </div>
+                    {% endif %}
+                    {% if book.review_text %}
+                    <p class="panel-review">"{{ book.review_text }}"</p>
+                    {% else %}
+                    <p class="panel-no-review">No review written yet.</p>
+                    {% endif %}
+                    <a href="{{ url_for('book_detail', book_id=book.book_id) }}"
+                       class="panel-link">View full entry →</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <!-- LIST VIEW (hidden by default) -->
+    <div class="bookshelf-list-view" id="list-view" style="display:none;">
+        {% for book in favourites %}
+        <a href="{{ url_for('book_detail', book_id=book.book_id) }}" class="list-book-item">
+            <div class="list-book-cover">
+                {% if book.cover_url %}
+                <img src="{{ book.cover_url }}" alt="{{ book.title }}">
+                {% else %}
+                <div class="list-cover-placeholder">{{ book.title[0].upper() }}</div>
+                {% endif %}
+            </div>
+            <div class="list-book-info">
+                <p class="list-book-title">{{ book.title }}</p>
+                <p class="list-book-author">{{ book.author }}</p>
+                {% if book.star_rating %}
+                <p class="list-book-stars">
+                    {% for i in range(book.star_rating) %}★{% endfor %}{% for i in range(5 - book.star_rating) %}☆{% endfor %}
+                </p>
+                {% endif %}
+                {% if book.review_text %}
+                <p class="list-book-review">"{{ book.review_text[:120] }}{% if book.review_text|length > 120 %}...{% endif %}"</p>
+                {% endif %}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    {% else %}
+
+    <!-- EMPTY STATE -->
+    <div class="bookshelf-empty">
+        <div class="bookshelf-empty-shelf">
+            <div class="empty-shelf-plank"></div>
+            <div class="empty-shelf-wood"></div>
+        </div>
+        <p class="bookshelf-empty-title">Your shelf is empty</p>
+        <p class="bookshelf-empty-sub">
+            Finish a book and mark it as a favourite<br>to see it appear here as a spine on your shelf.
+        </p>
+        <a href="{{ url_for('shelves', shelf='finished') }}" class="btn btn-primary">
+            Go to Finished Books
+        </a>
+    </div>
+
+    {% endif %}
+
+    <script>
+        function toggleNav() {
+            document.querySelector('.nav-links').classList.toggle('nav-open');
+        }
+
+        let activePanel = null;
+
+        function openBook(bookId) {
+            if (activePanel === bookId) {
+                closeBook(bookId);
+                return;
+            }
+            if (activePanel !== null) {
+                closeBook(activePanel);
+            }
+            const spine = document.getElementById('spine-' + bookId);
+            const panel = document.getElementById('panel-' + bookId);
+            spine.classList.add('spine-active');
+            panel.classList.add('panel-active');
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            activePanel = bookId;
+        }
+
+        function closeBook(bookId) {
+            const spine = document.getElementById('spine-' + bookId);
+            const panel = document.getElementById('panel-' + bookId);
+            spine.classList.remove('spine-active');
+            panel.classList.remove('panel-active');
+            activePanel = null;
+        }
+
+        function toggleView() {
+            const shelfView = document.getElementById('shelf-view');
+            const listView = document.getElementById('list-view');
+            const btn = document.getElementById('view-toggle');
+            if (shelfView.style.display === 'none') {
+                shelfView.style.display = 'block';
+                listView.style.display = 'none';
+                btn.textContent = 'Switch to List View';
+            } else {
+                shelfView.style.display = 'none';
+                listView.style.display = 'block';
+                btn.textContent = 'Switch to Shelf View';
+            }
+        }
+    </script>
+
+</body>
+</html>

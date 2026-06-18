@@ -406,6 +406,8 @@ def add_review(book_id):
 # Reading diary
 # ------------------------------------------------------------------
 
+from datetime import date
+
 @app.route('/diary')
 @login_required
 def diary():
@@ -422,7 +424,8 @@ def diary():
         'SELECT book_id, title FROM books WHERE user_id = ? ORDER BY title',
         (user_id,)
     ).fetchall()
-    return render_template('diary/diary.html', entries=entries, books=books)
+    return render_template('diary/diary.html', entries=entries, books=books,today=date.today().isoformat()
+    )
 
 
 @app.route('/diary/add', methods=['POST'])
@@ -430,6 +433,7 @@ def diary():
 def add_diary_entry():
     entry_text = request.form.get('entry_text', '').strip()
     book_id = request.form.get('book_id') or None
+    entry_date = request.form.get('entry_date', '').strip() or None
     if not entry_text:
         return redirect(url_for('diary'))
     if book_id:
@@ -442,8 +446,8 @@ def add_diary_entry():
             book_id = None
     db = get_db()
     db.execute(
-        'INSERT INTO diary_entries (user_id, book_id, entry_text) VALUES (?, ?, ?)',
-        (session['user_id'], book_id, entry_text)
+        'INSERT INTO diary_entries (user_id, book_id, entry_text, date_created) VALUES (?, ?, ?, ?)',
+        (session['user_id'], book_id, entry_text, entry_date)
     )
     db.commit()
     return redirect(url_for('diary'))
