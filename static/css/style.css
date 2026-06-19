@@ -677,7 +677,7 @@ body {
 
 .diary-wrap {
     display: grid;
-    grid-template-columns: 1fr 340px;
+    grid-template-columns: 1fr 500px;
     gap: 3rem;
     align-items: start;
 }
@@ -3015,7 +3015,6 @@ body {
         align-items: flex-start;
     }
     .diary-title { font-size: 2.5rem; }
-    .diary-header-decoration { display: none; }
     .diary-entries-col { padding: 1.5rem; }
     .diary-form-col { padding: 1.5rem; }
     .diary-card-text { font-size: 0.95rem; }
@@ -3436,4 +3435,264 @@ body {
     .panel-cover-wrap { display: none; }
     .book-spine { width: 34px; min-height: 150px; }
     .bookshelf-list-view { padding: 1.5rem; }
+}
+
+/* ── STATS PAGE ── */
+
+.stats-header {
+    padding: 100px 80px 50px;
+    background: #f7f7f7;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.stats-page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    font-weight: 500;
+    color: #1a1a18;
+    line-height: 1;
+}
+
+.stats-page-sub {
+    font-size: 0.88rem;
+    color: #aaa;
+    font-style: italic;
+}
+
+.stats-body {
+    padding: 3rem 80px;
+    background: white;
+}
+
+.stats-section-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #bbb;
+    margin-bottom: 1rem;
+}
+
+/* ── GOAL SECTION ── */
+
+.stats-goal-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    padding: 2.5rem;
+    background: #f4f7f2;
+    border-radius: 18px;
+    border: 1px solid rgba(107,143,94,0.2);
+    margin-bottom: 3rem;
+}
+
+.stats-goal-numbers {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.stats-goal-current {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    font-weight: 500;
+    color: #4a6741;
+    line-height: 1;
+}
+
+.stats-goal-divider {
+    font-size: 2rem;
+    color: #bbb;
+}
+
+.stats-goal-target {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    color: #aaa;
+    line-height: 1;
+}
+
+.stats-goal-unit {
+    font-size: 0.88rem;
+    color: #aaa;
+    font-style: italic;
+    margin-left: 0.25rem;
+}
+
+.stats-goal-track {
+    height: 8px;
+    background: rgba(107,143,94,0.15);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.stats-goal-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #6b8f5e, #4a6741);
+    border-radius: 6px;
+    transition: width 1s ease;
+}
+
+.stats-goal-label {
+    font-size: 0.85rem;
+    color: #6b8f5e;
+    font-style: italic;
+}
+
+.stats-no-goal {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-top: 1rem;
+}
+
+.stats-goal-right {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.stats-goal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.stats-goal-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.stats-goal-input-wrap input {
+    width: 100px;
+    padding: 12px 14px;
+    border: 1px solid #d9d9d9;
+    border-radius: 12px;
+    font-family: 'Lora', serif;
+    font-size: 1rem;
+    color: #1a1a18;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.stats-goal-input-wrap input:focus {
+    border-color: #6b8f5e;
+    box-shadow: 0 0 0 3px rgba(107,143,94,0.1);
+}
+
+.stats-goal-input-label {
+    font-size: 0.88rem;
+    color: #888;
+    font-style: italic;
+}
+
+/* ── STAT CARDS ── */
+
+.stats-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+}
+
+.stats-card {
+    padding: 1.75rem;
+    background: #f9f9f7;
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(107,143,94,0.3);
+}
+
+.stats-card-accent {
+    background: #f4f7f2;
+    border-color: rgba(107,143,94,0.2);
+}
+
+.stats-card-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #bbb;
+}
+
+.stats-card-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem;
+    font-weight: 500;
+    color: #1a1a18;
+    line-height: 1;
+}
+
+.stats-card-accent .stats-card-value {
+    color: #4a6741;
+}
+
+.stats-card-stars {
+    font-size: 1.5rem;
+    color: #6b8f5e;
+    letter-spacing: 2px;
+}
+
+.stats-card-genre {
+    font-size: 1.6rem;
+    line-height: 1.2;
+}
+
+.stats-card-empty {
+    color: #ddd;
+}
+
+.stats-card-sub {
+    font-size: 0.78rem;
+    color: #bbb;
+    font-style: italic;
+}
+
+/* ── EMPTY STATE ── */
+
+.stats-empty {
+    text-align: center;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.stats-empty-text {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.1rem;
+    color: #ccc;
+}
+
+/* ── RESPONSIVE ── */
+
+@media (max-width: 900px) {
+    .stats-header { padding: 90px 30px 35px; }
+    .stats-body { padding: 2rem 30px; }
+    .stats-goal-section { grid-template-columns: 1fr; gap: 2rem; }
+    .stats-page-title { font-size: 2.5rem; }
+}
+
+@media (max-width: 600px) {
+    .stats-header { padding: 80px 20px 25px; }
+    .stats-body { padding: 1.5rem 20px; }
+    .stats-cards-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-goal-current { font-size: 3rem; }
 }

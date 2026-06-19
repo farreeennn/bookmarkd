@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics — Bookmarkd</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <nav class="nav">
+        <a href="{{ url_for('dashboard') }}" class="nav-logo">BOOKMARKD</a>
+        <div class="nav-links">
+            <a href="{{ url_for('shelves') }}">Shelves</a>
+            <a href="{{ url_for('diary') }}">Diary</a>
+            <a href="{{ url_for('bookshelf') }}">Favourites</a>
+            <a href="{{ url_for('stats') }}">Stats</a>
+            <a href="{{ url_for('logout') }}" class="nav-logout">Log out</a>
+        </div>
+        <button class="nav-hamburger" onclick="toggleNav()">&#9776;</button>
+    </nav>
+
+    <!-- HEADER -->
+    <div class="stats-header">
+        <a href="{{ url_for('dashboard') }}" class="back-link">← Back</a>
+        <h1 class="stats-page-title">Your Statistics</h1>
+        <p class="stats-page-sub">A record of everything you've read</p>
+    </div>
+
+    <div class="stats-body">
+
+        <!-- READING GOAL -->
+        <div class="stats-goal-section">
+            <div class="stats-goal-left">
+                <p class="stats-section-label">Reading Goal {{ 2026 }}</p>
+                {% if goal %}
+                <div class="stats-goal-numbers">
+                    <span class="stats-goal-current">{{ finished_this_year }}</span>
+                    <span class="stats-goal-divider">/</span>
+                    <span class="stats-goal-target">{{ goal.target_book_count }}</span>
+                    <span class="stats-goal-unit">books</span>
+                </div>
+                <div class="stats-goal-track">
+                    <div class="stats-goal-fill"
+                         style="width: {{ [((finished_this_year / goal.target_book_count) * 100)|round, 100]|min }}%">
+                    </div>
+                </div>
+                <p class="stats-goal-label">
+                    {% set pct = ((finished_this_year / goal.target_book_count) * 100)|round %}
+                    {% if pct >= 100 %}
+                        Goal complete! 🎉
+                    {% elif pct >= 75 %}
+                        Almost there — {{ goal.target_book_count - finished_this_year }} to go
+                    {% elif pct >= 50 %}
+                        Halfway there — keep going
+                    {% else %}
+                        {{ goal.target_book_count - finished_this_year }} books to reach your goal
+                    {% endif %}
+                </p>
+                {% else %}
+                <p class="stats-no-goal">No goal set yet</p>
+                {% endif %}
+            </div>
+
+            <div class="stats-goal-right">
+                <p class="stats-section-label">
+                    {% if goal %}Update Goal{% else %}Set a Goal{% endif %}
+                </p>
+                <form method="POST" action="{{ url_for('set_goal') }}" class="stats-goal-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="stats-goal-input-wrap">
+                        <input type="number" name="target_book_count"
+                               value="{{ goal.target_book_count if goal else '' }}"
+                               placeholder="e.g. 24" min="1" max="9999">
+                        <span class="stats-goal-input-label">books in 2026</span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        {% if goal %}Update{% else %}Set Goal{% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- STAT CARDS -->
+        <div class="stats-cards-grid">
+
+            <div class="stats-card">
+                <p class="stats-card-label">Books Read</p>
+                <p class="stats-card-value">{{ total_books }}</p>
+                <p class="stats-card-sub">all time</p>
+            </div>
+
+            <div class="stats-card">
+                <p class="stats-card-label">Pages Read</p>
+                <p class="stats-card-value">{{ "{:,}".format(total_pages) }}</p>
+                <p class="stats-card-sub">all time</p>
+            </div>
+
+            <div class="stats-card">
+                <p class="stats-card-label">Average Rating</p>
+                {% if avg_rating %}
+                <p class="stats-card-value stats-card-stars">
+                    {% for i in range(avg_rating|int) %}★{% endfor %}{% if avg_rating % 1 >= 0.5 %}½{% endif %}
+                </p>
+                <p class="stats-card-sub">{{ avg_rating }} out of 5</p>
+                {% else %}
+                <p class="stats-card-value stats-card-empty">—</p>
+                <p class="stats-card-sub">no ratings yet</p>
+                {% endif %}
+            </div>
+
+            <div class="stats-card">
+                <p class="stats-card-label">Favourite Genre</p>
+                <p class="stats-card-value stats-card-genre">{{ fav_genre }}</p>
+                <p class="stats-card-sub">most read</p>
+            </div>
+
+            <div class="stats-card stats-card-accent">
+                <p class="stats-card-label">This Year</p>
+                <p class="stats-card-value">{{ finished_this_year }}</p>
+                <p class="stats-card-sub">books finished in 2026</p>
+            </div>
+
+        </div>
+
+        {% if total_books == 0 %}
+        <div class="stats-empty">
+            <p class="stats-empty-text">Start adding books to see your reading statistics.</p>
+            <a href="{{ url_for('add_book') }}" class="btn btn-primary">Add your first book</a>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <script>
+        function toggleNav() {
+            document.querySelector('.nav-links').classList.toggle('nav-open');
+        }
+    </script>
+
+</body>
+</html>
