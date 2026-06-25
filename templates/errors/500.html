@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Something Went Wrong — Bookmarkd</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="error-page-wrap">
+        <p class="error-page-code">500</p>
+        <h1 class="error-page-title">Something went wrong</h1>
+        <p class="error-page-msg">
+            even the best stories have a rough draft.<br>
+            we are working on it, we shall get back to you.
+        </p>
+        <a href="{{ url_for('dashboard') if session.user_id else url_for('landing') }}"
+           class="btn btn-primary">
+            Back to {{ 'Dashboard' if session.user_id else 'Home' }}
+        </a>
+    </div>
+</body>
+</html>

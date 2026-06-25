@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Statistics — Bookmarkd</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Lora:wght@400;500&display=swap" rel="stylesheet">
 </head>
@@ -25,7 +26,7 @@
     <div class="stats-header">
         <a href="{{ url_for('dashboard') }}" class="back-link">← Back</a>
         <h1 class="stats-page-title">Your Statistics</h1>
-        <p class="stats-page-sub">A record of everything you've read</p>
+        <p class="stats-page-sub">a record of everything you've read</p>
     </div>
 
     <div class="stats-body">
@@ -49,11 +50,11 @@
                 <p class="stats-goal-label">
                     {% set pct = ((finished_this_year / goal.target_book_count) * 100)|round %}
                     {% if pct >= 100 %}
-                        Goal complete! 🎉
+                        Goal complete!!!! hooray
                     {% elif pct >= 75 %}
                         Almost there — {{ goal.target_book_count - finished_this_year }} to go
                     {% elif pct >= 50 %}
-                        Halfway there — keep going
+                        Halfway there — keep going!!!!!!
                     {% else %}
                         {{ goal.target_book_count - finished_this_year }} books to reach your goal
                     {% endif %}
@@ -72,7 +73,7 @@
                     <div class="stats-goal-input-wrap">
                         <input type="number" name="target_book_count"
                                value="{{ goal.target_book_count if goal else '' }}"
-                               placeholder="e.g. 24" min="1" max="9999">
+                               placeholder="e.g. 67" min="1" max="9999">
                         <span class="stats-goal-input-label">books in 2026</span>
                     </div>
                     <button type="submit" class="btn btn-primary">

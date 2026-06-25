@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reading Diary — Bookmarkd</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Lora:wght@400;500&display=swap" rel="stylesheet">
 </head>
@@ -30,7 +31,7 @@
                 {% if entries %}
                     {{ entries|length }} private entr{{ 'y' if entries|length == 1 else 'ies' }}
                 {% else %}
-                    Your private reading journal
+                    your own private reading journal
                 {% endif %}
             </p>
         </div>
@@ -82,9 +83,9 @@
             <!-- EMPTY STATE -->
             <div class="diary-empty">
                 <div class="diary-empty-icon">✦</div>
-                <p class="diary-empty-title">Your diary is empty</p>
+                <p class="diary-empty-title">your diary is empty</p>
                 <p class="diary-empty-sub">
-                    Write your first entry — a quote that moved you,<br>
+                    write your first entry — maybe a quote that won't leave you<br>
                     a thought mid-chapter, a feeling after the last page.
                 </p>
             </div>
@@ -100,14 +101,14 @@
 
                 <div class="diary-form-header">
                     <h3 class="diary-form-title">New Entry</h3>
-                    <p class="diary-form-sub">What's on your mind?</p>
+                    <p class="diary-form-sub">what are we thinking today?</p>
                 </div>
 
                 <form method="POST" action="{{ url_for('add_diary_entry') }}">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                     <div class="diary-form-field">
-                        <label for="entry_text">Your thoughts</label>
+                        <label for="entry_text">your thoughts xd</label>
                         <textarea id="entry_text" name="entry_text"
                                   placeholder="Write anything..."
                                   required></textarea>
@@ -140,7 +141,7 @@
 
             <!-- DECORATIVE QUOTE -->
             <div class="diary-side-quote">
-                <p>"Keep a diary and one day it'll keep you."</p>
+                <p>"keep a diary and one day it'll keep you."</p>
                 <span>— Mae West</span>
             </div>
 

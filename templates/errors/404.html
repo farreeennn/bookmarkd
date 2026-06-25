@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Not Found — Bookmarkd</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="error-page-wrap">
+        <p class="error-page-code">404</p>
+        <h1 class="error-page-title">This page doesn't exist</h1>
+        <p class="error-page-msg">
+            like a book that was never written,<br>
+            this page can't be found. BARS.
+        </p>
+        <a href="{{ url_for('dashboard') if session.user_id else url_for('landing') }}"
+           class="btn btn-primary">
+            Back to {{ 'Dashboard' if session.user_id else 'Home' }}
+        </a>
+    </div>
+</body>
+</html>

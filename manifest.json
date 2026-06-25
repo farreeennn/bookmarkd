@@ -1,0 +1,24 @@
+{
+    "name": "Bookmarkd - your all in one amazing reading companion",
+    "short_name": "Bookmarkd",
+    "description": "track, review, and reflect on your reading journey privately.",
+    "start_url": "/dashboard",
+    "display": "standalone",
+    "background_color": "#f7f7f7",
+    "theme_color": "#4a6741",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/static/icons/icon-192.jpg",
+            "sizes": "192x192",
+            "type": "image/jpg",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/static/icons/icon-512.jpg",
+            "sizes": "512x512",
+            "type": "image/jpg",
+            "purpose": "any maskable"
+        }
+    ]
+}
