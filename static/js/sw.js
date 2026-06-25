@@ -1,26 +1,27 @@
 // Bookmarkd Service Worker
-// Handles offline caching and the offline fallback page
-
-const CACHE_NAME = 'bookmarkd-cache-v1';
+const CACHE_NAME = 'bookmarkd-cache-v2';
 
 const PRECACHE_URLS = [
     '/static/css/style.css',
-    '/static/icons/icon-192.png',
-    '/static/icons/icon-512.png',
     '/offline'
 ];
 
-// Install: cache the core static assets
+// Install: cache core assets, don't fail if one is missing
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(PRECACHE_URLS);
+            return Promise.all(
+                PRECACHE_URLS.map((url) => {
+                    return cache.add(url).catch((err) => {
+                        console.log('Failed to cache:', url, err);
+                    });
+                })
+            );
         })
     );
     self.skipWaiting();
 });
 
-// Activate: clean up old cache versions
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -34,16 +35,13 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// Fetch: cache-first for static assets, network-first with offline fallback for pages
 self.addEventListener('fetch', (event) => {
     const requestUrl = new URL(event.request.url);
 
-    // Only handle GET requests
     if (event.request.method !== 'GET') {
         return;
     }
 
-    // Static assets: cache-first strategy
     if (requestUrl.pathname.startsWith('/static/')) {
         event.respondWith(
             caches.match(event.request).then((cachedResponse) => {
@@ -55,13 +53,12 @@ self.addEventListener('fetch', (event) => {
                         cache.put(event.request, networkResponse.clone());
                         return networkResponse;
                     });
-                });
+                }).catch(() => cachedResponse);
             })
         );
         return;
     }
 
-    // Page navigation: network-first, fall back to cache, then offline page
     if (event.request.mode === 'navigate') {
         event.respondWith(
             fetch(event.request)
@@ -80,7 +77,6 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Everything else: network-first with cache fallback
     event.respondWith(
         fetch(event.request).catch(() => caches.match(event.request))
     );
