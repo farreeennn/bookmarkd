@@ -6,7 +6,7 @@ const PRECACHE_URLS = [
     '/offline'
 ];
 
-// Install: cache core assets, don't fail if one is missing
+// Install: cache core assets
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {

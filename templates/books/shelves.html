@@ -109,16 +109,16 @@
         <div class="shelf-empty">
             {% if active_shelf == 'currently_reading' %}
             <p class="shelf-empty-title">Nothing on this shelf yet.</p>
-            <p class="shelf-empty-sub">What are you reading right now?</p>
+            <p class="shelf-empty-sub">what are you reading right now?</p>
             {% elif active_shelf == 'want_to_read' %}
             <p class="shelf-empty-title">Your wishlist is empty.</p>
-            <p class="shelf-empty-sub">Add books you're dying to read.</p>
+            <p class="shelf-empty-sub">Add books you can't WAIT to read.</p>
             {% elif active_shelf == 'finished' %}
             <p class="shelf-empty-title">No finished books yet.</p>
-            <p class="shelf-empty-sub">Every book you finish will live here.</p>
+            <p class="shelf-empty-sub">every book you finish will live here.</p>
             {% else %}
             <p class="shelf-empty-title">No abandoned books.</p>
-            <p class="shelf-empty-sub">It's okay to put a book down.</p>
+            <p class="shelf-empty-sub">it's okay to put a book down :)</p>
             {% endif %}
             <a href="{{ url_for('add_book') }}" class="btn btn-primary">+ Add a Book</a>
         </div>

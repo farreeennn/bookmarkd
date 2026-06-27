@@ -1,7 +1,7 @@
 // Bookmarkd — main.js
 // Shared interactive behaviour across pages
 
-// ── HAMBURGER MENU (mobile nav) ──
+// -- HAMBURGER MENU (mobile nav) --
 function toggleNav() {
     const navLinks = document.querySelector('.nav-links');
     if (navLinks) {
@@ -9,7 +9,7 @@ function toggleNav() {
     }
 }
 
-// ── SERVICE WORKER REGISTRATION ──
+// -- SERVICE WORKER REGISTRATION --
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
@@ -18,7 +18,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// ── CLOSE MOBILE NAV WHEN CLICKING A LINK ──
+// -- CLOSE MOBILE NAV WHEN CLICKING A LINK --
 document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelectorAll('.nav-links a');
     navLinks.forEach((link) => {
