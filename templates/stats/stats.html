@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Statistics — Bookmarkd</title>
+    <title>Statistics - Bookmarkd</title>
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
@@ -53,9 +53,9 @@
                     {% if pct >= 100 %}
                         Goal complete!!!! hooray
                     {% elif pct >= 75 %}
-                        Almost there — {{ goal.target_book_count - finished_this_year }} to go
+                        Almost there - {{ goal.target_book_count - finished_this_year }} to go
                     {% elif pct >= 50 %}
-                        Halfway there — keep going!!!!!!
+                        Halfway there - keep going!!!!!!
                     {% else %}
                         {{ goal.target_book_count - finished_this_year }} books to reach your goal
                     {% endif %}
@@ -107,7 +107,7 @@
                 </p>
                 <p class="stats-card-sub">{{ avg_rating }} out of 5</p>
                 {% else %}
-                <p class="stats-card-value stats-card-empty">—</p>
+                <p class="stats-card-value stats-card-empty">-</p>
                 <p class="stats-card-sub">no ratings yet</p>
                 {% endif %}
             </div>

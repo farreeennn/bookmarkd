@@ -18,9 +18,9 @@ limiter = Limiter(
     default_limits=["200 per day", "50 per hour"]
 )
 
-# ------------------------------------------------------------------
+ 
 # DB helper
-# ------------------------------------------------------------------
+ 
 
 def get_db():
     if 'db' not in g:
@@ -33,9 +33,9 @@ def close_db(error):
     if db is not None:
         db.close()
 
-# ------------------------------------------------------------------
+
 # Auth helper
-# ------------------------------------------------------------------
+
 
 def login_required(f):
     from functools import wraps
@@ -46,9 +46,9 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
-# ------------------------------------------------------------------
+ 
 # Landing
-# ------------------------------------------------------------------
+ 
 
 @app.route('/')
 def landing():
@@ -56,9 +56,9 @@ def landing():
         return redirect(url_for('dashboard'))
     return render_template('landing.html')
 
-# ------------------------------------------------------------------
+ 
 # Auth routes
-# ------------------------------------------------------------------
+ 
 
 @app.route('/register', methods=['GET', 'POST'])
 @limiter.limit("10 per minute")
@@ -133,9 +133,9 @@ def logout():
     session.clear()
     return redirect(url_for('landing'))
 
-# ------------------------------------------------------------------
+ 
 # Dashboard
-# ------------------------------------------------------------------
+ 
 
 @app.route('/dashboard')
 @login_required
@@ -172,9 +172,9 @@ def dashboard():
         goal_progress=min(goal_progress, 100)
     )
 
-# ------------------------------------------------------------------
+ 
 # Books - shelves
-# ------------------------------------------------------------------
+ 
 
 @app.route('/shelves')
 @login_required
@@ -355,9 +355,9 @@ def delete_book(book_id):
     db.commit()
     return redirect(url_for('shelves'))
 
-# ------------------------------------------------------------------
+ 
 # Reviews
-# ------------------------------------------------------------------
+ 
 
 @app.route('/books/<int:book_id>/review', methods=['GET', 'POST'])
 @login_required
@@ -402,9 +402,9 @@ def add_review(book_id):
 
     return render_template('books/review.html', book=book, existing=existing, error=error)
 
-# ------------------------------------------------------------------
+ 
 # Reading diary
-# ------------------------------------------------------------------
+ 
 
 from datetime import date
 
@@ -468,9 +468,9 @@ def delete_diary_entry(entry_id):
     db.commit()
     return redirect(url_for('diary'))
 
-# ------------------------------------------------------------------
+ 
 # Interactive bookshelf (favourites)
-# ------------------------------------------------------------------
+ 
 
 @app.route('/bookshelf')
 @login_required
@@ -485,9 +485,9 @@ def bookshelf():
     ).fetchall()
     return render_template('bookshelf/bookshelf.html', favourites=favourites)
 
-# ------------------------------------------------------------------
+ 
 # Statistics and goals
-# ------------------------------------------------------------------
+ 
 
 @app.route('/stats')
 @login_required
@@ -568,9 +568,9 @@ def set_goal():
     db.commit()
     return redirect(url_for('stats'))
 
-# ------------------------------------------------------------------
+ 
 # PWA routes
-# ------------------------------------------------------------------
+ 
 
 
 @app.route('/sw.js')
@@ -584,9 +584,9 @@ def service_worker():
 def offline():
     return render_template('offline.html')
 
-# ------------------------------------------------------------------
+ 
 # Error handlers
-# ------------------------------------------------------------------
+ 
 
 @app.errorhandler(404)
 def not_found(e):
@@ -596,9 +596,9 @@ def not_found(e):
 def server_error(e):
     return render_template('errors/500.html'), 500
 
-# ------------------------------------------------------------------
+ 
 # Run
-# ------------------------------------------------------------------
+ 
 
 if __name__ == '__main__':
     database.init_db()

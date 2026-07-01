@@ -1,4 +1,4 @@
-// Bookmarkd — main.js
+// Bookmarkd - main.js
 // Shared interactive behaviour across pages
 
 // -- HAMBURGER MENU (mobile nav) --
